@@ -18,20 +18,19 @@
         <link rel="stylesheet" href="/css/user.css" />
     </head>
     <body>
-        <form class="user-form" action="/user/" method="POST">
+        <form class="user-form" action="/user/${user.getId() != 0 ? user.getId() : ""}" method="POST">
             <div class="form-field">
                 <span>Name:</span>
-                <input name="name" value="<%= name%>" />
+                <input name="name" value="${user.getName()}" />
             </div>
             <div class="form-field">
                 <span>Phone:</span>
-                <input name="phone" value="<%= phone%>" />
+                <input name="phone" value="${user.getPhone()}" />
             </div>
             <div class="form-field">
                 <span>Email:</span>
-                <input name="email" value="<%= email%>" />
+                <input name="email" value="${user.getEmail()}" />
             </div>
-            
             <button>Save</button>
         </form>
     </body>

@@ -22,7 +22,7 @@ import com.mycompany.user.User;
  *
  * @author dev
  */
-@WebServlet(urlPatterns = {"/user/*", "/user-save"})
+@WebServlet(urlPatterns = {"/user/*", "/user-save/"})
 public class EndPoint extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,35 +35,31 @@ public class EndPoint extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        User user = new User();
         String path = request.getRequestURI();
 
-        if (path.contains("/user/")) {
-            Pattern pattern = Pattern.compile("\\d+$");
-            Matcher matcher = pattern.matcher(path);
+        if (path.contains("/user-save/"))
+            request.getRequestDispatcher("/view/user-save.jsp").forward(request, response);
+    }
 
-            if (matcher.find()) {
-                String id = path.substring(matcher.start(), matcher.end());
+    private int getId(String path) {
+        Pattern pattern = Pattern.compile("\\d+$");
+        Matcher matcher = pattern.matcher(path);
+        int id = 0;
 
-                String name = request.getParameter("name");
+        if (matcher.find())
+            id = Integer.parseInt(path.substring(matcher.start(), matcher.end()));
 
-                request.setAttribute("name", id);
-                request.setAttribute("phone", "12312312");
-                request.setAttribute("email", "dwqqwe");
+        return id;
+    }
 
-                request.getRequestDispatcher("/view/user-save.jsp").forward(request, response);
-            }
-            else {
-                String name = request.getParameter("name");
-
-                //request.setAttribute("name", user.getName());
-                //request.setAttribute("phone", user.getPhone());
-                //request.setAttribute("name", name);
-                //request.setAttribute("email", user.getEmail());
-                //request.setAttribute("valid", user.validate());
-
-                request.getRequestDispatcher("/view/user.jsp").forward(request, response);
-            }
+    private User getUser(int id) {
+        if (id == 0) {
+            return new User();
+        }
+        else {
+            User user = new User("name", "phone", "email");
+            user.setId(id);
+            return user;
         }
     }
 
@@ -79,7 +75,18 @@ public class EndPoint extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String path = request.getRequestURI();
+
+        if (path.contains("/user/")) {
+            int id = this.getId(path);
+            User user = this.getUser(id);
+
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("/view/user.jsp").forward(request, response);
+        }
+        else {
+            processRequest(request, response);
+        }
     }
 
     /**
@@ -93,7 +100,14 @@ public class EndPoint extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String path = request.getRequestURI();
+
+        if (path.contains("/user/")) {
+            response.sendRedirect("/user-save/");
+        }
+        else {
+            processRequest(request, response);
+        }
     }
 
     /**
@@ -105,5 +119,4 @@ public class EndPoint extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

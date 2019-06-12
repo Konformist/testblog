@@ -10,39 +10,52 @@ package com.mycompany.user;
  * @author dev
  */
 public class User {
+    private int id = 0;
     private String name = "";
     private String phone = "";
     private String email = "";
-    
+
+    public User() {
+    }
+
     public User(String name, String phone, String email) {
         this.name = name;
         this.phone = phone;
         this.email = email;
     }
 
-    public User() {
+    public int getId() {
+        return this.id;
     }
-    
-    public void setName(String name) {
-        this.name = name;
+
+    public void setId(int id) {
+        this.id = id;
     }
-    
+
     public String getName() {
         return this.name;
     }
-    
-    public void setPhone(String phone) {
-        this.phone = phone;
+
+    public void setName(String name) {
+        this.name = name;
     }
-    
+
     public String getPhone() {
         return this.phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
     
     public String getEmail() {
         return this.email;
     }
-    
+
+    public String setEmail() {
+        return this.email;
+    }
+
     public String validate() {
         String ret = "";
         
