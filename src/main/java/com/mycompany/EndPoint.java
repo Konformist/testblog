@@ -6,7 +6,8 @@
 package com.mycompany;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -14,7 +15,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Cookie;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
 
 import com.mycompany.user.User;
 
@@ -53,14 +58,22 @@ public class EndPoint extends HttpServlet {
     }
 
     private User getUser(int id) {
-        if (id == 0) {
-            return new User();
-        }
-        else {
-            User user = new User("name", "phone", "email");
+        User user = new User();
+        user.load(id);
+        return user;
+    }
+
+    private void setUser(int id, HttpServletRequest request) {
+        User user = new User();
+
+        if (id != 0)
             user.setId(id);
-            return user;
-        }
+
+        user.setName(request.getParameter("name"));
+        user.setPhone(request.getParameter("phone"));
+        user.setEmail(request.getParameter("email"));
+
+        user.save();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -103,6 +116,7 @@ public class EndPoint extends HttpServlet {
         String path = request.getRequestURI();
 
         if (path.contains("/user/")) {
+            this.setUser(this.getId(path), request);
             response.sendRedirect("/user-save/");
         }
         else {

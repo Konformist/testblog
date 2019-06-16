@@ -5,6 +5,13 @@
  */
 package com.mycompany.user;
 
+import java.util.Properties;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.ResultSet;
+
 /**
  *
  * @author dev
@@ -14,6 +21,16 @@ public class User {
     private String name = "";
     private String phone = "";
     private String email = "";
+
+    static String DATABASE_URL = "jdbc:mysql://localhost/testadmin";
+    static String DATABASE_TABLE = "users";
+    static Properties DATABASE_PROPS = new Properties();
+
+    {
+        DATABASE_PROPS.setProperty("user", "admin");
+        DATABASE_PROPS.setProperty("password", "admin");
+        DATABASE_PROPS.setProperty("serverTimezone", "UTC");
+    }
 
     public User() {
     }
@@ -52,8 +69,97 @@ public class User {
         return this.email;
     }
 
-    public String setEmail() {
-        return this.email;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean load(int id) {
+        if (id == 0)
+            return false;
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(User.DATABASE_URL, User.DATABASE_PROPS);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM " + User.DATABASE_TABLE + " WHERE id=" + id);
+            rs.first();
+
+            this.id = id;
+            this.name = rs.getString("name");
+            this.phone = rs.getString("phone");
+            this.email = rs.getString("email");
+            return true;
+        }
+        catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            return false;
+        }
+        finally {
+            if (rs != null) {
+                try { rs.close(); }
+                catch (SQLException sqlEx) { } // ignore
+
+                rs = null;
+            }
+
+            if (stmt != null) {
+                try { stmt.close(); }
+                catch (SQLException sqlEx) { } // ignore
+
+                stmt = null;
+            }
+        }
+    }
+
+    public void save() {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(User.DATABASE_URL, User.DATABASE_PROPS);
+            stmt = conn.createStatement();
+
+            if ((this.id != 0) & stmt.execute("SELECT * FROM " + User.DATABASE_TABLE + " WHERE id=" + this.id)) {
+                stmt.executeUpdate(
+                    "UPDATE `" + User.DATABASE_TABLE + "` SET "
+                    + "`name` = '" + this.name + "', "
+                    + "`date_update` = CURRENT_DATE(), "
+                    + "`phone` = '" + this.phone + "', "
+                    + "`email` = '" + this.email + "' "
+                    + "WHERE `" + User.DATABASE_TABLE + "`.`id` = " + this.id
+                );
+            }
+            else {
+                stmt.executeUpdate(
+                    "INSERT INTO `" + User.DATABASE_TABLE + "` "
+                    + "(`id`, `name`, `date_reg`, `date_update`, `phone`, `email`) "
+                    + "VALUES "
+                    + "(NULL, '" + this.name + "', CURRENT_DATE(), CURRENT_DATE(), '" + this.phone + "', '" + this.email + "')"
+                );
+            }
+        }
+        catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+        }
+        finally {
+            if (rs != null) {
+                try { rs.close(); }
+                catch (SQLException sqlEx) { } // ignore
+
+                rs = null;
+            }
+
+            if (stmt != null) {
+                try { stmt.close(); }
+                catch (SQLException sqlEx) { } // ignore
+
+                stmt = null;
+            }
+        }
     }
 
     public String validate() {
