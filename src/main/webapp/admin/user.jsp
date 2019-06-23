@@ -5,11 +5,6 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%
-    Object name = request.getAttribute("name");
-    Object phone = request.getAttribute("phone");
-    Object email = request.getAttribute("email");
-%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,7 +13,11 @@
         <link rel="stylesheet" href="/css/user.css" />
     </head>
     <body>
-        <form class="user-form" action="/user/${user.getId() != 0 ? user.getId() : ""}" method="POST">
+        <form class="user-form" action="/admin/user/${user.getId() != 0 ? user.getId() : ""}" method="POST">
+            <div class="form-field">
+                <span>Login:</span>
+                <input name="login" value="${user.getLogin()}" />
+            </div>
             <div class="form-field">
                 <span>Name:</span>
                 <input name="name" value="${user.getName()}" />

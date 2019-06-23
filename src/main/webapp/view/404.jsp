@@ -2,9 +2,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>User</title>
+        <title>Not Found</title>
     </head>
     <body>
-        <h1>User save</h1>
+        <h1>404 Not Found</h1>
     </body>
 </html>
